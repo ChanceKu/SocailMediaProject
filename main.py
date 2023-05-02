@@ -1,5 +1,10 @@
 from module import *
 
+visited_list, comments_data = visited('Gmaps.json')
+print(visited_list)
+print(comments_data)
+
+# start webcrawling
 options = Options()
 options.chrome_executable_path= "D:\Python\chromedriver.exe"
 # options.add_argument("--start-maximized")
@@ -25,12 +30,14 @@ results = WebDriverWait(driver, 10).until(
     EC.presence_of_all_elements_located((By.CLASS_NAME, "hfpxzc"))
 )  
 
-# create list
-comments_data = []
-i = 3
+i = 2
 #續個打開搜尋結果
 for result in results[:i]:
+    #check if result has been visited
     label = result.get_attribute("aria-label")
+    if label in visited_list:
+        print(label, "is visited")
+        continue
     # Simulate the key press of Ctrl (or Command on macOS) while clicking on the link
     actions = ActionChains(driver)
     actions.key_down(Keys.CONTROL).click(result).key_up(Keys.CONTROL).perform()
@@ -143,7 +150,6 @@ for result in results[:i]:
     # close tab
     driver.close()
 
-    print("tab closed")
     # Switch back to the original tab
     driver.switch_to.window(driver.window_handles[0])   
 
@@ -156,3 +162,5 @@ with open("Gmaps.json", "w", encoding="utf-8") as f:
 # pandas存儲成csv
 df = pd.DataFrame(comments_data)
 df.to_csv('Gmaps.csv', index=False, encoding="utf-8")
+
+print("finished")

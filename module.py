@@ -18,18 +18,19 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 import pyautogui
 
-def switch():
-    # Switch to the new tab
-    driver.switch_to.window(driver.window_handles[-1])
-
-    time.sleep(3)
-
-    # 按"評論"
-    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[9]/div[9]/div/div/div[1]/div[2]/div/div[1]/div/div/div[3]/div/div/button[2]/div[2]/div[2]"))).click()
-
-    time.sleep(3)
-
-    # 按排序->最新
-    time.sleep(2)
-    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[9]/div[9]/div/div/div[1]/div[2]/div/div[1]/div/div/div[3]/div[7]/div[2]/button/span/span"))).click()
-    driver.find_element(By.XPATH, "/html/body/div[3]/div[3]/div[1]/div[2]").click()
+def visited(x='Gmaps.json'):
+    try:
+        # load json to get visited place
+        with open(x, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        try:
+            # Convert the JSON data into a Pandas DataFrame
+            df = pd.DataFrame(data)
+            visited = df["地點"]
+            visited = list(set(visited))
+        except:
+            visited = []
+    except:
+        data = []
+        visited = []
+    return visited, data
