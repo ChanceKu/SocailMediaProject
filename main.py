@@ -1,8 +1,7 @@
 from module import *
 
 visited_list, comments_data = visited('Gmaps.json')
-print(visited_list)
-print(comments_data)
+print("visited:", visited_list)
 
 # start webcrawling
 options = Options()
@@ -30,7 +29,14 @@ results = WebDriverWait(driver, 10).until(
     EC.presence_of_all_elements_located((By.CLASS_NAME, "hfpxzc"))
 )  
 
-i = 2
+# 建立字詞list, 當評論的時間含有list的字詞就停
+stop_list = ["2 年前", "3 年前", "4 年前", "5 年前"]
+
+# i = 要搜尋的地點數量
+i = 10
+if i > len(results):
+    i = len(results)
+
 #續個打開搜尋結果
 for result in results[:i]:
     #check if result has been visited
@@ -38,7 +44,9 @@ for result in results[:i]:
     if label in visited_list:
         print(label, "is visited")
         continue
-    # Simulate the key press of Ctrl (or Command on macOS) while clicking on the link
+
+    print(label, "start")
+    # 在新視窗打開搜尋結果
     actions = ActionChains(driver)
     actions.key_down(Keys.CONTROL).click(result).key_up(Keys.CONTROL).perform()
     # Switch to the new tab
@@ -47,20 +55,31 @@ for result in results[:i]:
     # 按"評論"
     WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[9]/div[9]/div/div/div[1]/div[2]/div/div[1]/div/div/div[3]/div/div/button[2]/div[2]/div[2]"))).click()
 
-    # 按排序->最新
+    # 按"排序"->"最新"
     WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[9]/div[9]/div/div/div[1]/div[2]/div/div[1]/div/div/div[3]/div[7]/div[2]/button/span/span"))).click()
     WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[3]/div[1]/div[2]"))).click()
 
-    for ii in range(1):
+    # 建立value來偵測評論數量
+    last_check_length = 0
+    for scroll_check in range(100):
         # move cursor and scroll
         scroll(1)
-        #check time
-        check_time = driver.find_elements(By.CLASS_NAME, "rsqaWe")
-        print("check_time:", check_time[-1].text)
-        time.sleep(10)
-        
 
-    #打開全文
+        # check review time
+        check_time = driver.find_elements(By.CLASS_NAME, "rsqaWe")
+
+        # 如果評論量跟上次一樣則代表沒有更多評論
+        if len(check_time) == last_check_length:
+            print("No more comment")
+            break
+        last_check_length = len(check_time)
+
+        # 如果時間到則停
+        if check_time[-1].text in stop_list:
+            print("Time to stop")
+            break
+        
+    # 按下所有"全文"按鈕
     try:
         button = driver.find_elements(By.TAG_NAME, 'button')
         for m in button:
@@ -113,35 +132,10 @@ for result in results[:i]:
                         detail.append(ser)
                         detail.append(vice)                
                         skip = True
-                    # print(ser, ":", vice)
                 else:
                     skip = False
         except:
             service = "None"
-
-        # try:
-        #     #各細節
-        #     skip = False
-        #     detail = []
-        #     for i in range(0, len(service)):
-        #         if skip == False:
-        #             if "：" in service[i].text:
-        #                 split_string = service[i].text.split("：")
-        #                 ser = split_string[0]
-        #                 vice = split_string[1]
-        #                 detail.append(ser)
-        #                 detail.append(vice)
-        #             else:
-        #                 ser = service[i].text
-        #                 vice = service[i+1].text
-        #                 detail.append(ser)
-        #                 detail.append(vice)                
-        #                 skip = True
-        #             # print(ser, ":", vice)
-        #         else:
-        #             skip = False
-        # except:
-        #     print("Error:3")
         
         try:
             comments_data.append({
@@ -161,14 +155,10 @@ for result in results[:i]:
     # Switch back to the original tab
     driver.switch_to.window(driver.window_handles[0])   
 
-# print(comments_data)
-
-# 存儲成json
+# 把comments_data存儲成json
 with open("Gmaps.json", "w", encoding="utf-8") as f:
     json.dump(comments_data, f, ensure_ascii=False)
 
-# pandas存儲成csv
+# 把comments_data換成andas存儲成csv
 df = pd.DataFrame(comments_data)
 df.to_csv('Gmaps.csv', index=False, encoding="utf-8")
-
-print("finished")

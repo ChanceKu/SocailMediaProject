@@ -35,11 +35,11 @@ def visited(loaded_json='Gmaps.json'):
         loaded_visited = []
     return loaded_visited, loaded_data
 
+# scroll(滑幾多下, 滑的距離, 滑的等待)
 def scroll(scroll_count_input = 10, scroll_height = -10000, scroll_sleep = 1):
     # move cursor and scroll
     pyautogui.moveTo(200,800,0.1)
     for scroll_i in range(scroll_count_input):
         pyautogui.moveTo(200,600)
         pyautogui.scroll(scroll_height)
-        print("scrolled")
         time.sleep(scroll_sleep)
