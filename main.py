@@ -51,7 +51,14 @@ for result in results[:i]:
     WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[9]/div[9]/div/div/div[1]/div[2]/div/div[1]/div/div/div[3]/div[7]/div[2]/button/span/span"))).click()
     WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[3]/div[1]/div[2]"))).click()
 
-    time.sleep(1)
+    for ii in range(1):
+        # move cursor and scroll
+        scroll(1)
+        #check time
+        check_time = driver.find_elements(By.CLASS_NAME, "rsqaWe")
+        print("check_time:", check_time[-1].text)
+        time.sleep(10)
+        
 
     #打開全文
     try:
@@ -148,6 +155,7 @@ for result in results[:i]:
             print("Error:2")
     
     # close tab
+    print(label, "finished")
     driver.close()
 
     # Switch back to the original tab

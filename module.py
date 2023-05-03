@@ -18,19 +18,28 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 import pyautogui
 
-def visited(x='Gmaps.json'):
+def visited(loaded_json='Gmaps.json'):
     try:
         # load json to get visited place
-        with open(x, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        with open(loaded_json, 'r', encoding='utf-8') as f:
+            loaded_data = json.load(f)
         try:
             # Convert the JSON data into a Pandas DataFrame
-            df = pd.DataFrame(data)
-            visited = df["地點"]
-            visited = list(set(visited))
+            loaded_df = pd.DataFrame(loaded_data)
+            loaded_visited = loaded_df["地點"]
+            loaded_visited = list(set(loaded_visited))
         except:
-            visited = []
+            loaded_visited = []
     except:
-        data = []
-        visited = []
-    return visited, data
+        loaded_data = []
+        loaded_visited = []
+    return loaded_visited, loaded_data
+
+def scroll(scroll_count_input = 10, scroll_height = -10000, scroll_sleep = 1):
+    # move cursor and scroll
+    pyautogui.moveTo(200,800,0.1)
+    for scroll_i in range(scroll_count_input):
+        pyautogui.moveTo(200,600)
+        pyautogui.scroll(scroll_height)
+        print("scrolled")
+        time.sleep(scroll_sleep)
