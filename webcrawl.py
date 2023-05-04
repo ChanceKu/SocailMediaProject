@@ -1,25 +1,25 @@
 from module import *
 
+# 打開json
 visited_list, comments_data = visited('Gmaps.json')
-print("visited:", visited_list)
 
 # search_ammount = 要搜尋的地點數量
-search_ammount = 5
+search_ammount = 6
+
+# 建立字詞list, 當評論的時間含有list的字詞就停
+stop_list = ["2 年前", "3 年前", "4 年前", "5 年前"]
+
+# 搜尋關鍵字
+search_input = "台南餐廳"
 
 # start webcrawling
 options = Options()
 options.chrome_executable_path= "D:\Python\chromedriver.exe"
-# options.add_argument("--start-maximized")
-# options.add_argument("window-size=1920,1080")
-# option.add_argument("--disable-notifications")
-# option.add_argument("--disable-popup-blocking")
-# option.add_argument('--headless=new') # 打開背景模式
 driver = webdriver.Chrome(options=options)
 
 url = "https://www.google.com/maps"
 driver.get(url)
 
-search_input = "台南餐廳"
 # class="tactile-searchbox-input"
 elem_1 = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "tactile-searchbox-input")))    #等待搜尋格出現
 elem_1.send_keys(search_input)  #在搜尋格輸入
@@ -36,13 +36,10 @@ results = WebDriverWait(driver, 10).until(
     EC.presence_of_all_elements_located((By.CLASS_NAME, "hfpxzc"))
 )  
 
-# 建立字詞list, 當評論的時間含有list的字詞就停
-stop_list = ["2 年前", "3 年前", "4 年前", "5 年前"]
-
 if search_ammount > len(results):
     search_ammount = len(results)
 
-#續個打開搜尋結果
+# 一個一個打開搜尋結果
 for result in results[:search_ammount]:
     #check if result has been visited
     label = result.get_attribute("aria-label")
@@ -72,7 +69,7 @@ for result in results[:search_ammount]:
         last_check_length = 0
         for scroll_check in range(100):
             # move cursor and scroll
-            scroll(1)
+            scroll(1, scroll_sleep = 0.5)
 
             # check review time
             check_time = driver.find_elements(By.CLASS_NAME, "rsqaWe")
@@ -97,11 +94,6 @@ for result in results[:search_ammount]:
         except:
             print("error:1")
             pass
-        
-        # get place's name
-        place = label
-        # input_element = driver.find_element(By.CLASS_NAME, "tactile-searchbox-input")
-        # place = input_element.get_attribute("value")
 
         # get comments
         for comment in driver.find_elements(By.CLASS_NAME, 'jftiEf'):
@@ -131,15 +123,11 @@ for result in results[:search_ammount]:
                     if skip == False:
                         if "：" in service[i].text:
                             split_string = service[i].text.split("：")
-                            ser = split_string[0]
-                            vice = split_string[1]
-                            detail.append(ser)
-                            detail.append(vice)
+                            detail.append(split_string[0])
+                            detail.append(split_string[1])
                         else:
-                            ser = service[i].text
-                            vice = service[i+1].text
-                            detail.append(ser)
-                            detail.append(vice)                
+                            detail.append(service[i].text)
+                            detail.append(service[i+1].text)                
                             skip = True
                     else:
                         skip = False
@@ -148,7 +136,7 @@ for result in results[:search_ammount]:
             
             try:
                 comments_data.append({
-                    "地點":place,
+                    "地點":label,
                     "名字":name.text,
                     "地址":address,
                     "評分":rating,
@@ -160,13 +148,13 @@ for result in results[:search_ammount]:
     except:
         print(label, "failed")
     
+    # 把comments_data存儲成json
+    with open("Gmaps.json", "w", encoding="utf-8") as f:
+        json.dump(comments_data, f, ensure_ascii=False)
+
     # close tab
     print(label, "finished")
     driver.close()
 
     # Switch back to the original tab
     driver.switch_to.window(driver.window_handles[0])   
-
-# 把comments_data存儲成json
-with open("Gmaps.json", "w", encoding="utf-8") as f:
-    json.dump(comments_data, f, ensure_ascii=False)
