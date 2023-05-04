@@ -33,11 +33,12 @@ results = WebDriverWait(driver, 10).until(
 stop_list = ["2 年前", "3 年前", "4 年前", "5 年前"]
 
 # i = 要搜尋的地點數量
-i = 10
+i = 2
 if i > len(results):
     i = len(results)
 
 #續個打開搜尋結果
+print("search_list:", results[:i])
 for result in results[:i]:
     #check if result has been visited
     label = result.get_attribute("aria-label")
@@ -51,6 +52,9 @@ for result in results[:i]:
     actions.key_down(Keys.CONTROL).click(result).key_up(Keys.CONTROL).perform()
     # Switch to the new tab
     driver.switch_to.window(driver.window_handles[-1])
+
+    # 取得地址
+    address = driver.find_element(By.CLASS_NAME, "Io6YTe").text
 
     # 按"評論"
     WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[9]/div[9]/div/div/div[1]/div[2]/div/div[1]/div/div/div[3]/div/div/button[2]/div[2]/div[2]"))).click()
@@ -90,8 +94,9 @@ for result in results[:i]:
         pass
     
     # get place's name
-    input_element = driver.find_element(By.CLASS_NAME, "tactile-searchbox-input")
-    place = input_element.get_attribute("value")
+    place = label
+    # input_element = driver.find_element(By.CLASS_NAME, "tactile-searchbox-input")
+    # place = input_element.get_attribute("value")
 
     # get comments
     comments = driver.find_elements(By.CLASS_NAME, 'jftiEf')
@@ -141,6 +146,7 @@ for result in results[:i]:
             comments_data.append({
                 "地點":place,
                 "名字":name.text,
+                "地址":address,
                 "評分":rating,
                 "時間":review_time.text,
                 "評論":review,
