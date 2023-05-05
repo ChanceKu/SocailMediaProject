@@ -4,7 +4,7 @@ from module import *
 visited_list, comments_data = visited('Gmaps.json')
 
 # search_ammount = 要搜尋的地點數量
-search_ammount = 6
+search_ammount = 100
 
 # 建立字詞list, 當評論的時間含有list的字詞就停
 stop_list = ["2 年前", "3 年前", "4 年前", "5 年前"]
@@ -29,7 +29,8 @@ elem_2.click()
 
 for scroll_check in range(search_ammount//7):
     # move cursor and scroll
-    scroll(1)
+    scroll(1, scroll_sleep=2)
+    print("scrolled")
 
 # Find all elements with class name "hfpxzc":找到的地點
 results = WebDriverWait(driver, 10).until(
@@ -134,17 +135,30 @@ for result in results[:search_ammount]:
             except:
                 service = "None"
             
-            try:
-                comments_data.append({
-                    "地點":label,
-                    "名字":name.text,
-                    "地址":address,
-                    "評分":rating,
-                    "時間":review_time.text,
-                    "評論":review,
-                    **{detail[i]:detail[i+1] for i in range(0, len(detail), 2)}})
-            except:
-                print("Error:2")
+            if service != "None":
+                try:
+                    comments_data.append({
+                        "地點":label,
+                        "名字":name.text,
+                        "地址":address,
+                        "評分":rating,
+                        "時間":review_time.text,
+                        "評論":review,
+                        **{detail[i]:detail[i+1] for i in range(0, len(detail), 2)}})
+                except:
+                    print("Error:201")
+            else:
+                try:
+                    comments_data.append({
+                        "地點":label,
+                        "名字":name.text,
+                        "地址":address,
+                        "評分":rating,
+                        "時間":review_time.text,
+                        "評論":review
+                        })
+                except:
+                    print("Error:202")
     except:
         print(label, "failed")
     
