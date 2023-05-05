@@ -1,4 +1,5 @@
 from module import *
+from progressbar import ProgressBar
 
 # 打開json
 visited_list, comments_data = visited('Gmaps.json')
@@ -96,8 +97,16 @@ for result in results[:search_ammount]:
             print("error:1")
             pass
 
+        comments = driver.find_elements(By.CLASS_NAME, 'jftiEf')
+        pbar = ProgressBar(max_value=len(comments))
+        pbar_count = 0
+
         # get comments
-        for comment in driver.find_elements(By.CLASS_NAME, 'jftiEf'):
+        for comment in comments:
+            # progressbar
+            pbar_count += 1
+            pbar.update(pbar_count)
+
             # get name
             name = comment.find_element(By.CLASS_NAME, "d4r55 ")
             # get review
