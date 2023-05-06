@@ -5,7 +5,7 @@ from progressbar import ProgressBar
 visited_list, comments_data = visited('Gmaps.json')
 
 # search_ammount = 要搜尋的地點數量
-search_ammount = 100
+search_ammount = 200
 
 # 建立字詞list, 當評論的時間含有list的字詞就停
 stop_list = ["2 年前", "3 年前", "4 年前", "5 年前"]
@@ -22,7 +22,7 @@ url = "https://www.google.com/maps"
 driver.get(url)
 
 # class="tactile-searchbox-input"
-elem_1 = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "tactile-searchbox-input")))    #等待搜尋格出現
+elem_1 = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "tactile-searchbox-input")))    #等待搜尋格出現
 elem_1.send_keys(search_input)  #在搜尋格輸入
 time.sleep(1)
 elem_2 = driver.find_element(By.CLASS_NAME, "mL3xi")        #按下搜尋
@@ -61,11 +61,11 @@ for result in results[:search_ammount]:
         address = driver.find_element(By.CLASS_NAME, "Io6YTe").text
 
         # 按"評論"
-        WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[9]/div[9]/div/div/div[1]/div[2]/div/div[1]/div/div/div[3]/div/div/button[2]/div[2]/div[2]"))).click()
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[9]/div[9]/div/div/div[1]/div[2]/div/div[1]/div/div/div[3]/div/div/button[2]/div[2]/div[2]"))).click()
 
         # 按"排序"->"最新"
-        WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[9]/div[9]/div/div/div[1]/div[2]/div/div[1]/div/div/div[3]/div[7]/div[2]/button/span/span"))).click()
-        WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[3]/div[1]/div[2]"))).click()
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[9]/div[9]/div/div/div[1]/div[2]/div/div[1]/div/div/div[3]/div[7]/div[2]/button/span/span"))).click()
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[3]/div[1]/div[2]"))).click()
 
         # 建立value來偵測評論數量
         last_check_length = 0
@@ -180,4 +180,7 @@ for result in results[:search_ammount]:
     driver.close()
 
     # Switch back to the original tab
-    driver.switch_to.window(driver.window_handles[0])   
+    driver.switch_to.window(driver.window_handles[0])  
+
+driver.quit() 
+print("program ended")
