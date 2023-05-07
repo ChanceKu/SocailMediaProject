@@ -17,6 +17,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 import pyautogui
+from progressbar import ProgressBar
 
 def visited(loaded_json='Gmaps.json'):
     try:

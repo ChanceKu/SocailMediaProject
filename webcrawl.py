@@ -1,17 +1,19 @@
 from module import *
-from progressbar import ProgressBar
 
-# 打開json
-visited_list, comments_data = visited('Gmaps.json')
+# json目的地
+json_dest = 'Gmaps.json'
 
 # search_ammount = 要搜尋的地點數量
-search_ammount = 200
+search_ammount = 100
 
 # 建立字詞list, 當評論的時間含有list的字詞就停
 stop_list = ["2 年前", "3 年前", "4 年前", "5 年前"]
 
 # 搜尋關鍵字
-search_input = "台南餐廳"
+search_input = "台南周圍的小吃"
+
+# load json
+visited_list, comments_data = visited(json_dest)
 
 # start webcrawling
 options = Options()
@@ -172,7 +174,7 @@ for result in results[:search_ammount]:
         print(label, "failed")
     
     # 把comments_data存儲成json
-    with open("Gmaps.json", "w", encoding="utf-8") as f:
+    with open(json_dest, "w", encoding="utf-8") as f:
         json.dump(comments_data, f, ensure_ascii=False)
 
     # close tab
