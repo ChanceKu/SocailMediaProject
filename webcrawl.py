@@ -4,13 +4,13 @@ from module import *
 json_dest = 'Gmaps.json'
 
 # search_ammount = 要搜尋的地點數量
-search_ammount = 100
+search_ammount = 300
 
 # 建立字詞list, 當評論的時間含有list的字詞就停
 stop_list = ["2 年前", "3 年前", "4 年前", "5 年前"]
 
 # 搜尋關鍵字
-search_input = "台南周圍的小吃"
+search_input = "台南市周圍邊的美食"
 
 # load json
 visited_list, comments_data = visited(json_dest)
