@@ -10,7 +10,7 @@ search_ammount = 300
 stop_list = ["2 年前", "3 年前", "4 年前", "5 年前"]
 
 # 搜尋關鍵字
-search_input = "台南市周圍邊的美食"
+search_input = "台南市周邊的餐廳"
 
 # load json
 visited_list, comments_data = visited(json_dest)
