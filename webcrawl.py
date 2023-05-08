@@ -1,10 +1,11 @@
 from module import *
+from concurrent.futures import ThreadPoolExecutor
 
 # json目的地
 json_dest = 'Gmaps.json'
 
 # search_ammount = 要搜尋的地點數量
-search_ammount = 300
+search_ammount = 200
 
 # 建立字詞list, 當評論的時間含有list的字詞就停
 stop_list = ["2 年前", "3 年前", "4 年前", "5 年前"]
@@ -29,6 +30,10 @@ elem_1.send_keys(search_input)  #在搜尋格輸入
 time.sleep(1)
 elem_2 = driver.find_element(By.CLASS_NAME, "mL3xi")        #按下搜尋
 elem_2.click()
+
+def click_button(button):
+    if button.text == "全文":
+        button.click()
 
 for scroll_check in range(search_ammount//7):
     # move cursor and scroll
@@ -71,17 +76,20 @@ for result in results[:search_ammount]:
 
         # 建立value來偵測評論數量
         last_check_length = 0
-        for scroll_check in range(100):
+        for scroll_check in range(300):
             # move cursor and scroll
-            scroll(1, scroll_sleep = 0.5)
+            scroll(1, scroll_sleep = 0.3)
 
             # check review time
             check_time = driver.find_elements(By.CLASS_NAME, "rsqaWe")
 
             # 如果評論量跟上次一樣則代表沒有更多評論
             if len(check_time) == last_check_length:
-                print("No more comment")
-                break
+                time.sleep(0.7)
+                check_time = driver.find_elements(By.CLASS_NAME, "rsqaWe")
+                if len(check_time) == last_check_length:
+                    print("No more comment")
+                    break
             last_check_length = len(check_time)
 
             # 如果時間到則停
@@ -92,9 +100,8 @@ for result in results[:search_ammount]:
         # 按下所有"全文"按鈕
         try:
             button = driver.find_elements(By.TAG_NAME, 'button')
-            for m in button:
-                if m.text == "全文":
-                    m.click()
+            with ThreadPoolExecutor() as executor:
+                executor.map(click_button, button)
         except:
             print("error:1")
             pass
